@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Enrollements;
 
+use App\Events\SuscriptionToCourse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Enrollments\EnrollmentsWriteRequest;
 use App\Interfaces\Service\Enrollments\IEnrollmentsWriteService;
@@ -22,6 +23,7 @@ class EnrollementsController extends Controller
         Gate::authorize('enrollInCourse', Course::class);
         return $this -> handleServiceCall(function () use ($request){
             $enrrollments = $this->enrrollmentsService->enrollInCourse(Auth::user()->id, $request->id);
+            SuscriptionToCourse::dispatch(Auth::user()->id,$request -> id);
             return $enrrollments; 
         });
     }
