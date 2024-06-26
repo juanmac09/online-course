@@ -36,6 +36,7 @@ use App\Interfaces\Repository\User\IUserProfileRepository;
 use App\Interfaces\Repository\User\IUserReadRepository;
 use App\Interfaces\Repository\User\IUserWriteRepository;
 use App\Interfaces\Service\Auth\IAuth;
+use App\Interfaces\Service\Auth\IRegisterService;
 use App\Interfaces\Service\Comments\ICommentsReadService;
 use App\Interfaces\Service\Comments\ICommentsWriteService;
 use App\Interfaces\Service\Comments\IReportCommentsService;
@@ -103,6 +104,7 @@ use App\Repository\User\UserProfileRepository;
 use App\Repository\User\UserReadRepository;
 use App\Repository\User\UserWriteRepository;
 use App\Services\Auth\AuthService;
+use App\Services\Auth\RegisterService;
 use App\Services\Comments\CommentsReadService;
 use App\Services\Comments\CommentsWriteService;
 use App\Services\Comments\ReportCommentsService;
@@ -150,6 +152,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Services
         $this-> app -> bind(IAuth::class,AuthService::class);
+        $this -> app -> bind(IRegisterService::class,RegisterService::class);
         $this -> app -> bind(IRoleWriteService::class,RoleWriteService::class);
         $this -> app -> bind(IRoleReadService::class,RoleReadService::class);
         $this -> app -> bind(IUserWriteService::class, UserWriteService::class);
