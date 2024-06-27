@@ -17,7 +17,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: DB_PASSWORD
+          MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: course-online
         ports:
           - 3306:3306
@@ -47,8 +47,8 @@ jobs:
 
     - name: Configure .env file
       run: |
-        sudo sed -i 's/DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
-        sudo sed -i 's/DB_DATABASE=laravel/DB_DATABASE=test_db/' .env
+        sudo sed -i 's/DB_HOST=127.0.0.1/DB_HOST=mysql/' .env
+        sudo sed -i 's/DB_DATABASE=laravel/DB_DATABASE=course-online/' .env
         sudo sed -i 's/DB_USERNAME=root/DB_USERNAME=root/' .env
         sudo sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
 
