@@ -15,6 +15,7 @@ class EnrollementsController extends Controller
     public $enrrollmentsService;
 
     public function __construct(IEnrollmentsWriteService $enrrollmentsService) {
+        parent::__construct();
         $this->enrrollmentsService = $enrrollmentsService;
     }
 
@@ -24,6 +25,7 @@ class EnrollementsController extends Controller
         return $this -> handleServiceCall(function () use ($request){
             $enrrollments = $this->enrrollmentsService->enrollInCourse(Auth::user()->id, $request->id);
             SuscriptionToCourse::dispatch(Auth::user()->id,$request -> id);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $enrrollments; 
         });
     }
@@ -33,6 +35,7 @@ class EnrollementsController extends Controller
         Gate::authorize('unEnrollInCourse', Course::class);
         return $this -> handleServiceCall(function () use ($request){
             $unEnrrollments = $this->enrrollmentsService->unEnrollInCourse(Auth::user()->id, $request->id);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $unEnrrollments;
         });
     }

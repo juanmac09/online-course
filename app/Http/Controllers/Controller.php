@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\Service\Cache\ICacheService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -9,6 +10,10 @@ use Illuminate\Http\JsonResponse;
 
 abstract class Controller
 {
+    public $cacheService;
+    public function __construct() {
+        $this->cacheService = app(ICacheService::class);
+    }
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**

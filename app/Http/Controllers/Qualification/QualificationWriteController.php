@@ -14,6 +14,7 @@ class QualificationWriteController extends Controller
 
     public function __construct(IQualificationWriteService  $qualificationService)
     {
+        parent::__construct();
         $this->qualificationService = $qualificationService;
     }
 
@@ -23,6 +24,7 @@ class QualificationWriteController extends Controller
         Gate::authorize('create', [Qualification::class, $request ->course_id]);
         return $this -> handleServiceCall(function () use ($request){
             $qualification =  $this->qualificationService->createQualification($request->qualification, Auth::user()->id, $request->course_id);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $qualification;
         });
             
@@ -35,6 +37,7 @@ class QualificationWriteController extends Controller
         Gate::authorize('update', [Qualification::class, $request ->course_id]);
         return $this -> handleServiceCall(function () use ($request){
             $qualification =  $this->qualificationService->updateQualification($request->qualification, Auth::user()->id, $request->course_id);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $qualification;
         });
             

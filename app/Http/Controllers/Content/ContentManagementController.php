@@ -17,6 +17,7 @@ class ContentManagementController extends Controller
     public $contentReadService;
 
     public function __construct(IContentWriteService $contentWriteService, IContentReadService $contentReadService) {
+        parent::__construct();
         $this->contentWriteService = $contentWriteService;
         $this -> contentReadService = $contentReadService;
     }
@@ -26,6 +27,7 @@ class ContentManagementController extends Controller
         Gate::authorize('create', [CourseContent::class, $request -> course_id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this->contentWriteService->uploadContent($request->only('title', 'description', 'content','course_id'));
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content;
         });
     }
@@ -33,7 +35,9 @@ class ContentManagementController extends Controller
     public function getContentForCourse(ContentReadRequest $request){
         Gate::authorize('getContentForCourse', [CourseContent::class, $request ->id]);
         return $this -> handleServiceCall(function () use ($request){
-            $contents = $this->contentReadService->getContentForCourse($request->id,$request -> perPage, $request -> page);
+            $contents = $this ->cacheService -> storeInCache('Content','contentForCourse',$request->perPage,$request -> page,function () use ($request){
+                return $this->contentReadService->getContentForCourse($request->id,$request -> perPage, $request -> page);
+            },10);
             return $contents;
         });
     }
@@ -43,6 +47,7 @@ class ContentManagementController extends Controller
         Gate::authorize('update', [CourseContent::class, $request ->id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this->contentWriteService->updateContent($request -> id,$request->only('title', 'description', 'content'));
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content;
         });
            
@@ -53,6 +58,7 @@ class ContentManagementController extends Controller
         Gate::authorize('disable', [CourseContent::class, $request ->id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this->contentWriteService->disableContent($request->id);
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content;
         });
     }
@@ -62,6 +68,7 @@ class ContentManagementController extends Controller
         Gate::authorize('updateOrder', [CourseContent::class, $request ->id]);
         return $this -> handleServiceCall(function () use ($request){
             $contents = $this->contentWriteService->updateContentOrder($request->order);
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $contents;
         });  
     }

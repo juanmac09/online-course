@@ -37,6 +37,8 @@ use App\Interfaces\Repository\User\IUserReadRepository;
 use App\Interfaces\Repository\User\IUserWriteRepository;
 use App\Interfaces\Service\Auth\IAuth;
 use App\Interfaces\Service\Auth\IRegisterService;
+use App\Interfaces\Service\Cache\ICacheService;
+use App\Interfaces\Service\Cache\ICacheWriteService;
 use App\Interfaces\Service\Comments\ICommentsReadService;
 use App\Interfaces\Service\Comments\ICommentsWriteService;
 use App\Interfaces\Service\Comments\IReportCommentsService;
@@ -105,6 +107,8 @@ use App\Repository\User\UserReadRepository;
 use App\Repository\User\UserWriteRepository;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\RegisterService;
+use App\Services\Cache\CacheService;
+use App\Services\Cache\CacheWriteService;
 use App\Services\Comments\CommentsReadService;
 use App\Services\Comments\CommentsWriteService;
 use App\Services\Comments\ReportCommentsService;
@@ -186,6 +190,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IManagingRoleUserWriteService::class,ManagingRoleUserWriteService::class);
         $this -> app -> bind(IPermissionVerificationService::class,PermissionVerificationService::class);
         $this -> app -> bind(ICourseOwnerService::class,CourseOwnerService::class);
+        $this -> app -> bind(ICacheService::class,CacheService::class);
 
         // Repositories
         $this -> app -> bind(IRoleWriteRepository::class,RoleWriteRepository::class);

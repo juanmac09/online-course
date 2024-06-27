@@ -12,17 +12,19 @@ use App\Interfaces\Service\Qualification\IQualificationReadService;
 use App\Traits\Course\AttachQualificationsTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
+use App\Traits\Helper\ReturnIdInRequestOrAuth;
 use Illuminate\Support\Facades\Gate;
 
 class UploadedCourseController extends Controller
 {
-    use AttachQualificationsTrait;
+    use AttachQualificationsTrait,ReturnIdInRequestOrAuth;
     public $courseService;
     public $coursePublicWriteService;
     public $coursePublicReadService;
     public $qualificationService;
     public function __construct(IUploadedCourseService $courseService, ICoursePublicWriteService $coursePublicWriteService, ICoursePublicReadService $coursePublicReadService, IQualificationReadService $qualificationService)
     {
+        parent::__construct();
         $this->courseService = $courseService;
         $this->coursePublicWriteService = $coursePublicWriteService;
         $this->coursePublicReadService = $coursePublicReadService;
@@ -34,18 +36,20 @@ class UploadedCourseController extends Controller
         if ($request->has('id')) {
             Gate::authorize('getCoursesUploaded', Course::class);
         }
-        try {
-            if ($request->has('id')) {
-                $courses = $this->courseService->getUploadedCourses(null, $request->id, $request->perPage, $request->page);
-            } else {
-                $courses = $this->courseService->getUploadedCourses(Auth::user(), null, $request->perPage, $request->page);
-            }
-
-            $courses = $this->attachQualificationsToCourses($courses, $this->qualificationService);
-            return response()->json(['success' => true, 'courses' => $courses], 200);
-        } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
-        }
+        return $this->handleServiceCall(function () use ($request) {
+            $id = $this -> getUserIdFromRequestOrAuth($request); 
+            $courses = $this ->cacheService -> storeInCache('Course','CoursesUploadedUser-'.$id,$request->perPage,$request -> page,function () use ($request){
+                if ($request->has('id')) {
+                    $courses = $this->courseService->getUploadedCourses(null, $request->id, $request->perPage, $request->page);
+                } else {
+                    $courses = $this->courseService->getUploadedCourses(Auth::user(), null, $request->perPage, $request->page);
+                }
+    
+                return $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            },10);
+            return $courses;
+        });
+           
     }
 
 
@@ -54,6 +58,7 @@ class UploadedCourseController extends Controller
         Gate::authorize('makePublicACourse', [Course::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
             $course = $this->coursePublicWriteService->makePublicACourse($request->id);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $course;
         });
     }
@@ -65,12 +70,16 @@ class UploadedCourseController extends Controller
             Gate::authorize('getPublicCourses', Course::class);
         }
         return $this -> handleServiceCall(function () use ($request){
-            if ($request->has('id')) {
-                $courses = $this->coursePublicReadService->getPublicCourses($request->id, $request->perPage, $request->page);
-            } else {
-                $courses = $this->coursePublicReadService->getPublicCourses(Auth::user()->id, $request->perPage, $request->page);
-            }
-            $courses = $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            $id = $this -> getUserIdFromRequestOrAuth($request); 
+            $courses = $this ->cacheService -> storeInCache('Course','PublicCourseUser-'.$id,$request->perPage,$request -> page,function () use ($request){
+                if ($request->has('id')) {
+                    $courses = $this->coursePublicReadService->getPublicCourses($request->id, $request->perPage, $request->page);
+                } else {
+                    $courses = $this->coursePublicReadService->getPublicCourses(Auth::user()->id, $request->perPage, $request->page);
+                }
+                return $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            },10);
+            
             return $courses;
         });
        

@@ -16,6 +16,7 @@ class ContentStatusController extends Controller
     public $contentWriteService;
 
     public function __construct(IStatusContentReadService $contentReadService, IStatusContentWriteService $contentWriteService) {
+        parent::__construct();
         $this->contentReadService = $contentReadService;
         $this->contentWriteService = $contentWriteService;
     }
@@ -25,7 +26,9 @@ class ContentStatusController extends Controller
     public function getStatusDesactiveContent(getPublicContentRequest $request){
         Gate::authorize('getStatusDesactiveContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
-            $content = $this -> contentReadService -> getContentStatus($request -> id,0 ,$request ->perPage, $request ->page);
+            $content = $this ->cacheService -> storeInCache('Content','StatusDesactiveContent',$request->perPage,$request -> page,function () use ($request){
+                return $this -> contentReadService -> getContentStatus($request -> id,0 ,$request ->perPage, $request ->page);
+            },10);
             return $content;
         });
     }
@@ -36,6 +39,7 @@ class ContentStatusController extends Controller
         Gate::authorize('changeStatusActiveContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this -> contentWriteService -> changeContentStatus($request -> id,1);
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content;
         });
             

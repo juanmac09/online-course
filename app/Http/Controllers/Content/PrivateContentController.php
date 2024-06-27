@@ -16,6 +16,7 @@ class PrivateContentController extends Controller
     public $contentWriteService;
 
     public function __construct(IContentPrivacyReadService $contentReadService, IContentPrivacyWriteService $contentWriteService) {
+        parent::__construct();
         $this->contentReadService = $contentReadService;
         $this->contentWriteService = $contentWriteService;
     }
@@ -24,7 +25,9 @@ class PrivateContentController extends Controller
     public function getPrivateContent(getPublicContentRequest $request){
         Gate::authorize('getPrivateContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
-            $content = $this -> contentReadService -> getContentPrivacy($request -> id,0 ,$request ->perPage, $request ->page);
+            $content = $this ->cacheService -> storeInCache('Content','PrivateContent',$request->perPage,$request -> page,function () use ($request){
+                return $this -> contentReadService -> getContentPrivacy($request -> id,0 ,$request ->perPage, $request ->page);
+            },10);
             return $content;
         });
         
@@ -35,6 +38,7 @@ class PrivateContentController extends Controller
         Gate::authorize('makePrivateAContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this -> contentWriteService -> changeContentPrivacy($request -> id,0);
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content; 
         });
        

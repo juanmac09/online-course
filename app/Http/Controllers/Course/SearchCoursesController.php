@@ -20,6 +20,7 @@ class SearchCoursesController extends Controller
 
     public function __construct(ISearchPublicCourseService $courseService, IQualificationReadService $qualificationService)
     {
+        parent::__construct();
         $this->courseService = $courseService;
         $this->qualificationService = $qualificationService;
     }
@@ -41,8 +42,11 @@ class SearchCoursesController extends Controller
     {
         Gate::authorize('getPublicAndActiveCourses', Course::class);
         return $this->handleServiceCall(function () use ($request) {
-            $courses = $this->courseService->getPublicAndActiveCourses(Auth::user()->id, $request->perPage, $request->page);
-            $courses = $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            $courses = $this ->cacheService -> storeInCache('Course','PublicAndActiveCourse',$request->perPage,$request -> page,function () use ($request){
+                $courses = $this->courseService->getPublicAndActiveCourses(Auth::user()->id, $request->perPage, $request->page);
+                return $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            },10);
+            
             return $courses;
         });
     }

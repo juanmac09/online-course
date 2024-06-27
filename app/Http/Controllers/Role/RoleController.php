@@ -34,6 +34,7 @@ class RoleController extends Controller
 
     public function __construct(IRoleWriteService $roleWriteService, IRoleReadService $roleReadService)
     {
+        parent::__construct();
         $this->roleWriteService = $roleWriteService;
         $this->roleReadService = $roleReadService;
     }
@@ -85,6 +86,7 @@ class RoleController extends Controller
         Gate::authorize('create', Role::class);
         return $this -> handleServiceCall(function () use ($request){
             $role = $this->roleWriteService->createRole($request->only('name'));
+            $this -> cacheService -> invalidateGroupCache('Role');
             return $role;
         });
       
@@ -94,7 +96,9 @@ class RoleController extends Controller
     {
         Gate::authorize('index', Role::class);
         return $this -> handleServiceCall(function () use ($request){
-            $roles = $this->roleReadService->getAllRole($request->perPage,$request -> page);
+            $roles = $this ->cacheService -> storeInCache('Role','AllRoles',$request->perPage,$request -> page,function () use ($request){
+                return $this->roleReadService->getAllRole($request->perPage,$request -> page);
+            },10);
             return $roles;
         });
         
@@ -106,6 +110,7 @@ class RoleController extends Controller
         Gate::authorize('update', Role::class);
         return $this -> handleServiceCall(function () use ($request){
             $role = $this->roleWriteService->updateRole($request->id, $request->only('name'));
+            $this -> cacheService -> invalidateGroupCache('Role');
             return $role;
         });  
     }

@@ -12,13 +12,16 @@ class CommentsReadController extends Controller
     public $commentReadService;
 
     public function __construct(ICommentsReadService $commentReadService) {
+        parent::__construct();
         $this->commentReadService = $commentReadService;
     }
 
     public function getCommentsbyContent(CommentsReadRequest $request){
         Gate::authorize('getCommentsbyContent', [Comments::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
-            $comment =  $this -> commentReadService -> getCommentsByContent($request -> id,$request ->perPage, $request ->page);
+            $comment = $this ->cacheService -> storeInCache('Comments','CommentsByContentId-'.$request->id,$request->perPage,$request -> page,function () use ($request){
+                return  $this -> commentReadService -> getCommentsByContent($request -> id,$request ->perPage, $request ->page);
+            },10);
             return $comment;
         }); 
     }

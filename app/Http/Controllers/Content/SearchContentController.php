@@ -13,6 +13,7 @@ class SearchContentController extends Controller
     public $courseService;
 
     public function __construct(ISearchContentService $courseService) {
+        parent::__construct();
         $this->courseService = $courseService;
     }
 
@@ -20,7 +21,9 @@ class SearchContentController extends Controller
     public function getPublicAndActiveContent(getPublicContentRequest $request){
         Gate::authorize('getPublicAndActiveContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
-            $content = $this -> courseService -> getPublicAndActiveContent($request -> id,$request ->perPage, $request ->page);
+            $content = $this ->cacheService -> storeInCache('Content','PublicAndActiveContent',$request->perPage,$request -> page,function () use ($request){
+                return $this -> courseService -> getPublicAndActiveContent($request -> id,$request ->perPage, $request ->page);
+            },10);
             return $content;
         });
     }

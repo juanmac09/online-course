@@ -16,6 +16,7 @@ class CommentsWriteController extends Controller
 
     public function __construct(ICommentsWriteService $commentWriteService)
     {
+        parent::__construct();
         $this->commentWriteService = $commentWriteService;
     }
 
@@ -25,6 +26,7 @@ class CommentsWriteController extends Controller
         Gate::authorize('create', [Comments::class, $request->content_id]);
         return $this->handleServiceCall(function () use ($request) {
             $comment = $this->commentWriteService->createComments(Auth::user()->id, $request->content_id, $request->comment);
+            $this -> cacheService -> invalidateGroupCache('Comments');
             return $comment;
         });
     }
@@ -34,6 +36,7 @@ class CommentsWriteController extends Controller
         Gate::authorize('update', [Comments::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
             $comment = $this->commentWriteService->updateComments($request->id, $request->comment);
+            $this -> cacheService -> invalidateGroupCache('Comments');
             return $comment;
         });
     }
@@ -44,6 +47,7 @@ class CommentsWriteController extends Controller
         Gate::authorize('disable', [Comments::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
             $comment = $this->commentWriteService->disableComments($request->id);
+            $this -> cacheService -> invalidateGroupCache('Comments');
             return $comment;
         });
     }

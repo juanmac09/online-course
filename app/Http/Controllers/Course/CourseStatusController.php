@@ -12,17 +12,19 @@ use App\Traits\Course\AttachQualificationsTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
+use App\Traits\Helper\ReturnIdInRequestOrAuth;
 use Illuminate\Support\Facades\Gate;
 
 class CourseStatusController extends Controller
 {
-    use AttachQualificationsTrait;
+    use AttachQualificationsTrait,ReturnIdInRequestOrAuth;
     public $courseStatusReadService;
     public $courseStatusWriteService;
     public $qualificationService;
 
     public function __construct(ICourseStatusReadService $courseStatusReadService, ICourseStatusWriteService $courseStatusWriteService, IQualificationReadService $qualificationService)
     {
+        parent::__construct();
         $this->courseStatusReadService = $courseStatusReadService;
         $this->courseStatusWriteService = $courseStatusWriteService;
         $this->qualificationService = $qualificationService;
@@ -34,6 +36,7 @@ class CourseStatusController extends Controller
         Gate::authorize('changeActiveStatusToCourse', [Course::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
             $course = $this->courseStatusWriteService->changeCourseStatus($request->id, 1);
+            $this -> cacheService -> invalidateGroupCache('Course');
             return $course;
         });
     }
@@ -45,12 +48,16 @@ class CourseStatusController extends Controller
             Gate::authorize('getDesactiveCourses', Course::class);
         }
         return $this -> handleServiceCall(function () use ($request){
-            if ($request->has('id')) {
-                $courses = $this->courseStatusReadService->getCourseStatus($request->id, 0, $request->perPage, $request->page);
-            } else {
-                $courses = $this->courseStatusReadService->getCourseStatus(Auth::user()->id, 0, $request->perPage, $request->page);
-            }
-            $courses = $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            $id = $this -> getUserIdFromRequestOrAuth($request);
+            $courses = $this ->cacheService -> storeInCache('Course','DesactiveCourseUser-'.$id,$request->perPage,$request -> page,function () use ($request){
+                if ($request->has('id')) {
+                    $courses = $this->courseStatusReadService->getCourseStatus($request->id, 0, $request->perPage, $request->page);
+                } else {
+                    $courses = $this->courseStatusReadService->getCourseStatus(Auth::user()->id, 0, $request->perPage, $request->page);
+                }
+                return  $this->attachQualificationsToCourses($courses, $this->qualificationService);
+            },10);
+            
             return $courses;
         });
     }

@@ -17,6 +17,7 @@ class UploadedContentController extends Controller
 
 
     public function __construct(IContentPrivacyReadService $contentReadService, IContentPrivacyWriteService $contentWriteService) {
+        parent::__construct();
         $this->contentReadService = $contentReadService;
         $this->contentWriteService = $contentWriteService;
     }
@@ -25,7 +26,10 @@ class UploadedContentController extends Controller
     public function getPublicContent(getPublicContentRequest $request){
         Gate::authorize('getPublicContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
-            $contents = $this -> contentReadService -> getContentPrivacy($request -> id,1 ,$request ->perPage, $request ->page);
+
+            $contents = $this ->cacheService -> storeInCache('Content','PublicContent',$request->perPage,$request -> page,function () use ($request){
+                return $this -> contentReadService -> getContentPrivacy($request -> id,1 ,$request ->perPage, $request ->page);
+            },10);
             return $contents;
         });
         
@@ -37,6 +41,7 @@ class UploadedContentController extends Controller
         Gate::authorize('makePublicAContent', [CourseContent::class, $request -> id]);
         return $this -> handleServiceCall(function () use ($request){
             $content = $this -> contentWriteService -> changeContentPrivacy($request -> id,1);
+            $this -> cacheService -> invalidateGroupCache('Content');
             return $content;
         });
     } 

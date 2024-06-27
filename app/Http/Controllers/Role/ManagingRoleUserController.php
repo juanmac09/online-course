@@ -14,6 +14,7 @@ class ManagingRoleUserController extends Controller
     public $roleService;
 
     public function __construct(IManagingRoleUserWriteService $roleService) {
+        parent::__construct();
         $this->roleService = $roleService;
     }
 
@@ -23,6 +24,7 @@ class ManagingRoleUserController extends Controller
         Gate::authorize('changeRoleToUser', Role::class);
         return $this -> handleServiceCall(function () use ($request){
             $user = $this->roleService->changeUserRole($request -> id, $request -> role_id);
+            $this -> cacheService -> invalidateGroupCache('User');
             return $user;
         });
         
