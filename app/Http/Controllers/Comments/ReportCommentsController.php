@@ -18,7 +18,57 @@ class ReportCommentsController extends Controller
         parent::__construct();
         $this->commentsService = $commentsService;
     }
-
+    /**
+     * Get comments made by a user.
+     *
+     * @param getCourseAdvancedRequest $request The request object containing pagination details.
+     * @return \Illuminate\Http\JsonResponse The response containing the comments made by the user.
+     * @OA\Post(
+     *     path="/api/comments/getCommentsByUser",
+     *     summary="Get comments made by a user",
+     *     description="Endpoint to retrieve comments made by a specific user.",
+     *     operationId="getCommentByUser",
+     *     tags={"Comments Management"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"id"},
+     *             @OA\Property(property="id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Comments made by the user",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="user_id", type="integer", example=1),
+     *                 @OA\Property(property="content_id", type="integer", example=1),
+     *                 @OA\Property(property="comment", type="string", example="This is a comment."),
+     *                 @OA\Property(property="created_at", type="string", example="2024-06-28 12:00:00"),
+     *                 @OA\Property(property="updated_at", type="string", example="2024-06-28 12:00:00")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while retrieving comments",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Internal Server Error")
+     *         )
+     *     )
+     * )
+     */
     public function getCommentByUser(getCourseAdvancedRequest $request){
 
         if ($request->has('id')) {
