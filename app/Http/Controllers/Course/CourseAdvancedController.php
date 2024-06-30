@@ -32,21 +32,34 @@ class CourseAdvancedController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the enrolled courses.
      * @throws \Throwable If an error occurs while retrieving enrolled courses.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to perform this action.
-     * @OA\Post(
+     * 
+     * @OA\Get(
      *     path="/api/course/getEnrolledCourses",
      *     summary="Get enrolled courses",
      *     description="This endpoint retrieves enrolled courses. Requires authentication token.",
      *     operationId="getEnrolledCourses",
-     *     security={{"bearerAuth":{}}},
      *     tags={"Courses"},
-     *     @OA\RequestBody(
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         required=false,
+     *         description="User id",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="perPage",
+     *         in="query",
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"perPage"},
-     *             @OA\Property(property="perPage", type="integer", example=10),
-     *             @OA\Property(property="page", type="integer", example=1),
-     *             @OA\Property(property="id", type="integer", example=1, description="Optional user ID to retrieve another user's enrolled courses")
-     *         )
+     *         description="Number of results per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=true,
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,

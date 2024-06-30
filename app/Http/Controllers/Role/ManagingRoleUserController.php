@@ -27,7 +27,7 @@ class ManagingRoleUserController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the success status, updated user data, or error message.
      * @throws \Throwable If an error occurs while changing the user's role.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to change the role.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/role/change-user",
      *     summary="Change role of a user",
      *     description="This endpoint is used to change the role of a user.",

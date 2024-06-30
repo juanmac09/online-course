@@ -35,7 +35,7 @@ class SearchContentController extends Controller
      *         name="id",
      *         in="query",
      *         required=true,
-     *         description="ID of the content",
+     *         description="ID of the course",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Parameter(
@@ -86,7 +86,7 @@ class SearchContentController extends Controller
     {
         Gate::authorize('getPublicAndActiveContent', [CourseContent::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
-            $content = $this->cacheService->storeInCache('Content', 'PublicAndActiveContent', $request->perPage, $request->page, function () use ($request) {
+            $content = $this->cacheService->storeInCache('Content', 'PublicAndActiveContentCourse-'.$request -> id, $request->perPage, $request->page, function () use ($request) {
                 return $this->courseService->getPublicAndActiveContent($request->id, $request->perPage, $request->page);
             }, 10);
             return $content;

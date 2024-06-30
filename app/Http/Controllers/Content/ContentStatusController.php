@@ -91,7 +91,7 @@ class ContentStatusController extends Controller
     {
         Gate::authorize('getStatusDesactiveContent', [CourseContent::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
-            $content = $this->cacheService->storeInCache('Content', 'StatusDesactiveContent', $request->perPage, $request->page, function () use ($request) {
+            $content = $this->cacheService->storeInCache('Content', 'StatusDesactiveContentCourse-'.$request ->id, $request->perPage, $request->page, function () use ($request) {
                 return $this->contentReadService->getContentStatus($request->id, 0, $request->perPage, $request->page);
             }, 10);
             return $content;
@@ -104,7 +104,7 @@ class ContentStatusController extends Controller
      *
      * @param getIdContentRequest $request The request object containing content ID.
      * @return \Illuminate\Http\JsonResponse The response containing the activated content.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/content/changeStatusContent",
      *     summary="Activate content",
      *     description="Endpoint to change the status of content to active.",

@@ -39,7 +39,7 @@ class UploadedContentController extends Controller
      *         name="id",
      *         in="query",
      *         required=true,
-     *         description="ID of the content",
+     *         description="ID of the course",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Parameter(
@@ -91,7 +91,7 @@ class UploadedContentController extends Controller
         Gate::authorize('getPublicContent', [CourseContent::class, $request->id]);
         return $this->handleServiceCall(function () use ($request) {
 
-            $contents = $this->cacheService->storeInCache('Content', 'PublicContent', $request->perPage, $request->page, function () use ($request) {
+            $contents = $this->cacheService->storeInCache('Content', 'PublicContentCourse-'.$request ->id, $request->perPage, $request->page, function () use ($request) {
                 return $this->contentReadService->getContentPrivacy($request->id, 1, $request->perPage, $request->page);
             }, 10);
             return $contents;

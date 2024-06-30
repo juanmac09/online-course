@@ -33,6 +33,7 @@ class UserManagementController extends Controller
      *     description="This endpoint is used to create a new user.",
      *     operationId="createUser",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -89,6 +90,7 @@ class UserManagementController extends Controller
      *     description="This endpoint retrieves all users with pagination.",
      *     operationId="getAllUser",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -155,6 +157,7 @@ class UserManagementController extends Controller
      *     description="This endpoint updates an existing user.",
      *     operationId="updateUser",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -214,6 +217,7 @@ class UserManagementController extends Controller
      *     description="This endpoint disables an existing user.",
      *     operationId="disableUser",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(

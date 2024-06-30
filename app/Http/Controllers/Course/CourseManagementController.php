@@ -89,20 +89,26 @@ class CourseManagementController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the list of courses.
      * @throws \Throwable If an error occurs while retrieving courses.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to retrieve courses.
-     * @OA\Post(
+     * @OA\Get(
      *     path="/api/course/all",
      *     summary="Get all courses",
      *     description="This endpoint retrieves all courses.",
      *     operationId="getAllCourse",
      *     tags={"Courses"},
      *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="perPage",
+     *         in="query",
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"perPage", "page"},
-     *             @OA\Property(property="perPage", type="integer", example=10),
-     *             @OA\Property(property="page", type="integer", example=1)
-     *         )
+     *         description="Number of results per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=true,
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -153,7 +159,7 @@ class CourseManagementController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the updated course data.
      * @throws \Throwable If an error occurs while updating the course.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to update the course.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/course/update",
      *     summary="Update a course",
      *     description="This endpoint updates a course.",
@@ -163,7 +169,7 @@ class CourseManagementController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"id", "title", "description"},
+     *             required={"id"},
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="title", type="string", example="Introduction to Programming"),
      *             @OA\Property(property="description", type="string", example="An updated course description")
@@ -207,7 +213,7 @@ class CourseManagementController extends Controller
      * @return \Illuminate\Http\JsonResponse The response indicating success or failure of disabling the course.
      * @throws \Throwable If an error occurs while disabling the course.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to disable the course.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/course/disable",
      *     summary="Disable a course",
      *     description="This endpoint disables a course.",

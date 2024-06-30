@@ -34,7 +34,7 @@ class PrivateCourseController extends Controller
      *
      * @param CourseWriteRequest $request The request object containing the course ID.
      * @return \Illuminate\Http\JsonResponse The response containing the updated course.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/course/makePrivateACourse",
      *     summary="Make course private",
      *     description="Endpoint to make a course private.",

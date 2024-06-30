@@ -31,12 +31,12 @@ class QualificationWriteController extends Controller
      *     description="This endpoint is used to create a new qualification.",
      *     operationId="createQualification",
      *    tags={"Qualifications"},
-     * 
+     *    security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"qualification", "course_id"},
-     *             @OA\Property(property="qualification", type="integer", example=90),
+     *             @OA\Property(property="qualification", type="integer", example=5),
      *             @OA\Property(property="course_id", type="integer", example=1)
      *         )
      *     ),
@@ -94,7 +94,7 @@ class QualificationWriteController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"qualification", "course_id"},
-     *             @OA\Property(property="qualification", type="integer", example=90),
+     *             @OA\Property(property="qualification", type="integer", example=5),
      *             @OA\Property(property="course_id", type="integer", example=1)
      *         )
      *     ),

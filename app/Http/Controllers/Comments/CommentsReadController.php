@@ -29,7 +29,7 @@ class CommentsReadController extends Controller
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
-     *         in="path",
+     *         in="query",
      *         required=true,
      *         description="ID of the content",
      *         @OA\Schema(type="integer", example=1)

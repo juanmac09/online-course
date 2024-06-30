@@ -18,6 +18,7 @@ class SearchEnrollementsController extends Controller
 
     public function __construct(ISearchEnrollmentsService $enrrollementsServicel)
     {
+        parent::__construct();
         $this->enrrollementsService = $enrrollementsServicel;
     }
 
@@ -29,21 +30,34 @@ class SearchEnrollementsController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the found courses.
      * @throws \Throwable If an error occurs while searching enrollments.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to perform this action.
-     * @OA\Post(
+     *
+     * @OA\Get(
      *     path="/api/enrollments/searchEncorrollments",
      *     summary="Find enrollments by keywords",
      *     description="This endpoint finds enrollments by keywords. Requires authentication token.",
      *     operationId="findEnrollmentsByKeywords",
      *     tags={"Enrollments"},
      *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="keyword",
+     *         in="query",
+     *         description="keyword",
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"keyword"},
-     *             @OA\Property(property="keyword", type="string", example="programming"),
-     *             @OA\Property(property="perPage", type="integer", example=10),
-     *             @OA\Property(property="page", type="integer", example=1)
-     *         )
+     *         @OA\Schema(type="string", example="programming")
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="perPage",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=10)
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -88,20 +102,26 @@ class SearchEnrollementsController extends Controller
      * @return \Illuminate\Http\JsonResponse The response containing the public and active enrollments.
      * @throws \Throwable If an error occurs while retrieving enrollments.
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to perform this action.
-     * @OA\Post(
+     * @OA\Get(
      *     path="/api/enrollments/getPublicAndActiveEncorrollments",
      *     summary="Get public and active enrollments",
      *     description="This endpoint retrieves public and active enrollments for a user. Requires authentication token.",
      *     operationId="getPublicAndActiveEnrollments",
      *     tags={"Enrollments"},
      *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"perPage"},
-     *             @OA\Property(property="perPage", type="integer", example=10),
-     *             @OA\Property(property="page", type="integer", example=1)
-     *         )
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="perPage",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=10)
      *     ),
      *     @OA\Response(
      *         response=200,

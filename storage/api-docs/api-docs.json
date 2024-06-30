@@ -39,6 +39,10 @@
                                     "password": {
                                         "type": "string",
                                         "example": "password"
+                                    },
+                                    "auth_type": {
+                                        "type": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -143,6 +147,10 @@
                                         "type": "string",
                                         "example": "password"
                                     },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
                                     "role_id": {
                                         "type": "integer",
                                         "example": 1
@@ -240,7 +248,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "description": "ID of the content",
                         "required": true,
                         "schema": {
@@ -467,7 +475,7 @@
             }
         },
         "/api/comments/update": {
-            "post": {
+            "put": {
                 "tags": [
                     "Comments Management"
                 ],
@@ -596,7 +604,7 @@
             }
         },
         "/api/comments/disable": {
-            "post": {
+            "put": {
                 "tags": [
                     "Comments Management"
                 ],
@@ -815,15 +823,19 @@
                 "tags": [
                     "Content Management"
                 ],
-                "summary": "Upload new content",
-                "description": "Endpoint to upload new content to a course.",
-                "operationId": "uploadContent",
+                "summary": "Upload new multimedia content",
+                "description": "Endpoint to upload new multimedia content (JPEG, PNG, JPG, GIF, MP4, AVI, MOV, WMV) to a course.",
+                "operationId": "uploadMultimediaContent",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
                                     "title": {
                                         "type": "string",
                                         "example": "Content Title"
@@ -831,10 +843,6 @@
                                     "description": {
                                         "type": "string",
                                         "example": "Content Description"
-                                    },
-                                    "content": {
-                                        "type": "string",
-                                        "example": "Content Data"
                                     },
                                     "course_id": {
                                         "type": "integer",
@@ -848,7 +856,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Content uploaded",
+                        "description": "Multimedia content uploaded successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -865,9 +873,9 @@
                                             "type": "string",
                                             "example": "Content Description"
                                         },
-                                        "content": {
+                                        "file_url": {
                                             "type": "string",
-                                            "example": "Content Data"
+                                            "example": "http://example.com/uploads/content/file.jpg"
                                         },
                                         "course_id": {
                                             "type": "integer",
@@ -896,7 +904,7 @@
                         }
                     },
                     "500": {
-                        "description": "An error occurred while uploading content",
+                        "description": "An error occurred while uploading multimedia content",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1040,7 +1048,7 @@
             }
         },
         "/api/content/update": {
-            "put": {
+            "post": {
                 "tags": [
                     "Content Management"
                 ],
@@ -1050,12 +1058,16 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "format": "binary"
                                     },
                                     "title": {
                                         "type": "string",
@@ -1064,10 +1076,6 @@
                                     "description": {
                                         "type": "string",
                                         "example": "Updated Content Description"
-                                    },
-                                    "content": {
-                                        "type": "string",
-                                        "example": "Updated Content Data"
                                     }
                                 },
                                 "type": "object"
@@ -1149,7 +1157,7 @@
             }
         },
         "/api/content/disable": {
-            "delete": {
+            "put": {
                 "tags": [
                     "Content Management"
                 ],
@@ -1255,16 +1263,20 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "order": {
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
                                         },
-                                        "example": [
-                                            1,
-                                            2,
-                                            3
-                                        ]
+                                        "example": {
+                                            "1": 1,
+                                            "2": 2,
+                                            "3": 3
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -1465,7 +1477,7 @@
             }
         },
         "/api/content/changeStatusContent": {
-            "post": {
+            "put": {
                 "tags": [
                     "Content Status Management"
                 ],
@@ -1678,7 +1690,7 @@
             }
         },
         "/api/content/makePrivateAContent": {
-            "post": {
+            "put": {
                 "tags": [
                     "Private Content Management"
                 ],
@@ -1786,7 +1798,7 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "ID of the content",
+                        "description": "ID of the course",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -1902,7 +1914,7 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "ID of the content",
+                        "description": "ID of the course",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -2099,41 +2111,45 @@
             }
         },
         "/api/course/getEnrolledCourses": {
-            "post": {
+            "get": {
                 "tags": [
                     "Courses"
                 ],
                 "summary": "Get enrolled courses",
                 "description": "This endpoint retrieves enrolled courses. Requires authentication token.",
                 "operationId": "getEnrolledCourses",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "perPage"
-                                ],
-                                "properties": {
-                                    "perPage": {
-                                        "type": "integer",
-                                        "example": 10
-                                    },
-                                    "page": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "id": {
-                                        "description": "Optional user ID to retrieve another user's enrolled courses",
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "User id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Enrolled courses retrieved successfully",
@@ -2332,37 +2348,35 @@
             }
         },
         "/api/course/all": {
-            "post": {
+            "get": {
                 "tags": [
                     "Courses"
                 ],
                 "summary": "Get all courses",
                 "description": "This endpoint retrieves all courses.",
                 "operationId": "getAllCourse",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "perPage",
-                                    "page"
-                                ],
-                                "properties": {
-                                    "perPage": {
-                                        "type": "integer",
-                                        "example": 10
-                                    },
-                                    "page": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Courses retrieved successfully",
@@ -2457,7 +2471,7 @@
             }
         },
         "/api/course/update": {
-            "post": {
+            "put": {
                 "tags": [
                     "Courses"
                 ],
@@ -2470,9 +2484,7 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id",
-                                    "title",
-                                    "description"
+                                    "id"
                                 ],
                                 "properties": {
                                     "id": {
@@ -2552,7 +2564,7 @@
             }
         },
         "/api/course/disable": {
-            "post": {
+            "put": {
                 "tags": [
                     "Courses"
                 ],
@@ -2628,7 +2640,7 @@
             }
         },
         "/api/course/changeActiveStatusToCourse": {
-            "post": {
+            "put": {
                 "tags": [
                     "Course Status"
                 ],
@@ -2834,7 +2846,7 @@
             }
         },
         "/api/course/makePrivateACourse": {
-            "post": {
+            "put": {
                 "tags": [
                     "Private Course"
                 ],
@@ -3368,7 +3380,7 @@
             }
         },
         "/api/course/makePublicACourse": {
-            "post": {
+            "put": {
                 "tags": [
                     "Uploaded Courses"
                 ],
@@ -3719,40 +3731,45 @@
             }
         },
         "/api/enrollments/searchEncorrollments": {
-            "post": {
+            "get": {
                 "tags": [
                     "Enrollments"
                 ],
                 "summary": "Find enrollments by keywords",
                 "description": "This endpoint finds enrollments by keywords. Requires authentication token.",
                 "operationId": "findEnrollmentsByKeywords",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "keyword"
-                                ],
-                                "properties": {
-                                    "keyword": {
-                                        "type": "string",
-                                        "example": "programming"
-                                    },
-                                    "perPage": {
-                                        "type": "integer",
-                                        "example": 10
-                                    },
-                                    "page": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "keyword",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "programming"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Enrollments found successfully",
@@ -3827,36 +3844,35 @@
             }
         },
         "/api/enrollments/getPublicAndActiveEncorrollments": {
-            "post": {
+            "get": {
                 "tags": [
                     "Enrollments"
                 ],
                 "summary": "Get public and active enrollments",
                 "description": "This endpoint retrieves public and active enrollments for a user. Requires authentication token.",
                 "operationId": "getPublicAndActiveEnrollments",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "perPage"
-                                ],
-                                "properties": {
-                                    "perPage": {
-                                        "type": "integer",
-                                        "example": 10
-                                    },
-                                    "page": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Public and active enrollments retrieved successfully",
@@ -3950,7 +3966,7 @@
                                 "properties": {
                                     "qualification": {
                                         "type": "integer",
-                                        "example": 90
+                                        "example": 5
                                     },
                                     "course_id": {
                                         "type": "integer",
@@ -4030,7 +4046,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/qualification/update": {
@@ -4053,7 +4074,7 @@
                                 "properties": {
                                     "qualification": {
                                         "type": "integer",
-                                        "example": 90
+                                        "example": 5
                                     },
                                     "course_id": {
                                         "type": "integer",
@@ -4142,7 +4163,7 @@
             }
         },
         "/api/role/change-user": {
-            "post": {
+            "put": {
                 "tags": [
                     "Roles"
                 ],
@@ -4652,7 +4673,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/user/all": {
@@ -4756,7 +4782,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/user/update": {
@@ -4869,7 +4900,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/user/disable": {
@@ -4962,8 +4998,27 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": {
+        "1": {
+            "bearerAuth": []
         }
     }
 }

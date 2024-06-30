@@ -83,7 +83,7 @@ class CommentsWriteController extends Controller
      *
      * @param CommentsWriteRequest $request The request object containing comment details.
      * @return \Illuminate\Http\JsonResponse The response containing the updated comment.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/comments/update",
      *     summary="Update an existing comment",
      *     description="Endpoint to update an existing comment.",
@@ -149,7 +149,7 @@ class CommentsWriteController extends Controller
      *
      * @param CommentsWriteRequest $request The request object containing comment ID.
      * @return \Illuminate\Http\JsonResponse The response indicating the disabled comment.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/comments/disable",
      *     summary="Disable a comment",
      *     description="Endpoint to disable a comment.",

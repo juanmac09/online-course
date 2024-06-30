@@ -34,7 +34,7 @@ class CourseStatusController extends Controller
      *
      * @param CourseWriteRequest $request The request object containing the course ID.
      * @return \Illuminate\Http\JsonResponse The response containing the updated course.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/course/changeActiveStatusToCourse",
      *     summary="Change course active status",
      *     description="Endpoint to change the active status of a course.",

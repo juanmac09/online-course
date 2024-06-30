@@ -112,7 +112,7 @@ class UploadedCourseController extends Controller
      *
      * @param CourseWriteRequest $request The request object containing course ID.
      * @return \Illuminate\Http\JsonResponse The response containing the updated course.
-     * @OA\Post(
+     * @OA\Put(
      *     path="/api/course/makePublicACourse",
      *     summary="Make a course public",
      *     description="Endpoint to make a course public.",

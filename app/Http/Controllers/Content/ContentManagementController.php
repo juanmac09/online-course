@@ -25,34 +25,38 @@ class ContentManagementController extends Controller
     }
 
     /**
-     * Upload new content.
+     * Upload new multimedia content.
      *
-     * @param UploadContentRequest $request The request object containing content details.
-     * @return \Illuminate\Http\JsonResponse The response containing the uploaded content.
+     * @param UploadContentRequest $request The request object containing multimedia content details.
+     * @return \Illuminate\Http\JsonResponse The response containing the uploaded multimedia content.
+     *
      * @OA\Post(
      *     path="/api/content/upload",
-     *     summary="Upload new content",
-     *     description="Endpoint to upload new content to a course.",
-     *     operationId="uploadContent",
+     *     summary="Upload new multimedia content",
+     *     description="Endpoint to upload new multimedia content (JPEG, PNG, JPG, GIF, MP4, AVI, MOV, WMV) to a course.",
+     *     operationId="uploadMultimediaContent",
      *     tags={"Content Management"},
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="title", type="string", example="Content Title"),
-     *             @OA\Property(property="description", type="string", example="Content Description"),
-     *             @OA\Property(property="content", type="string", example="Content Data"),
-     *             @OA\Property(property="course_id", type="integer", example=1)
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="content", type="string", format="binary"),
+     *                 @OA\Property(property="title", type="string", example="Content Title"),
+     *                 @OA\Property(property="description", type="string", example="Content Description"),
+     *                 @OA\Property(property="course_id", type="integer", example=1)
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Content uploaded",
+     *         description="Multimedia content uploaded successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="title", type="string", example="Content Title"),
      *             @OA\Property(property="description", type="string", example="Content Description"),
-     *             @OA\Property(property="content", type="string", example="Content Data"),
+     *             @OA\Property(property="file_url", type="string", example="http://example.com/uploads/content/file.jpg"),
      *             @OA\Property(property="course_id", type="integer", example=1)
      *         )
      *     ),
@@ -65,7 +69,7 @@ class ContentManagementController extends Controller
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="An error occurred while uploading content",
+     *         description="An error occurred while uploading multimedia content",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Internal Server Error")
@@ -162,7 +166,8 @@ class ContentManagementController extends Controller
      *
      * @param UploadContentRequest $request The request object containing updated content details.
      * @return \Illuminate\Http\JsonResponse The response containing the updated content.
-     * @OA\Put(
+     *
+     * @OA\Post(
      *     path="/api/content/update",
      *     summary="Update existing content",
      *     description="Endpoint to update existing content.",
@@ -171,11 +176,14 @@ class ContentManagementController extends Controller
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
-     *             @OA\Property(property="title", type="string", example="Updated Content Title"),
-     *             @OA\Property(property="description", type="string", example="Updated Content Description"),
-     *             @OA\Property(property="content", type="string", example="Updated Content Data")
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="content", type="string", format="binary"),
+     *                 @OA\Property(property="title", type="string", example="Updated Content Title"),
+     *                 @OA\Property(property="description", type="string", example="Updated Content Description"),
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -220,7 +228,7 @@ class ContentManagementController extends Controller
      *
      * @param ContentReadRequest $request The request object containing content ID.
      * @return \Illuminate\Http\JsonResponse The response containing the disabled content.
-     * @OA\Delete(
+     * @OA\Put(
      *     path="/api/content/disable",
      *     summary="Disable content",
      *     description="Endpoint to disable content.",
@@ -286,7 +294,8 @@ class ContentManagementController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="order", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="order", type="array", @OA\Items(type="integer"), example={1: 1, 2: 2, 3 : 3})
      *         )
      *     ),
      *     @OA\Response(
