@@ -10,50 +10,80 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: Ju@n09100
           MYSQL_DATABASE: course-online
+          MYSQL_USER: sail
+          MYSQL_PASSWORD: Ju@n09100
         ports:
           - 3306:3306
-        options: --health-cmd='mysqladmin ping --silent' --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-        extensions: mbstring, zip, mysql
-        ini-values: |
-          memory_limit = 512M
-        coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: mbstring, zip, mysql
+          ini-values: |
+            memory_limit = 512M
+          coverage: none
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest --ansi
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --ansi
 
-    - name: Copy .env.example to .env
-      run: cp .env.example .env
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
 
-    - name: Generate application key
-      run: php artisan key:generate
+      - name: Configure .env file
+        run: |
+          sudo sed -i 's/APP_NAME=.*/APP_NAME=course/' .env
+          sudo sed -i 's/APP_ENV=.*/APP_ENV=local/' .env
+          sudo sed -i 's/APP_KEY=.*/APP_KEY=base64:xAzxVuX35TCyrzTXpTIZUCuNMRRY3I0ZpPWemSoi9Ao=/' .env
+          sudo sed -i 's/APP_DEBUG=.*/APP_DEBUG=true/' .env
+          sudo sed -i 's/APP_TIMEZONE=.*/APP_TIMEZONE=UTC/' .env
+          sudo sed -i 's/APP_URL=.*/APP_URL=http:\/\/localhost/' .env
+          sudo sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sudo sed -i 's/DB_HOST=.*/DB_HOST=mysql/' .env
+          sudo sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
+          sudo sed -i 's/DB_DATABASE=.*/DB_DATABASE=course-online/' .env
+          sudo sed -i 's/DB_USERNAME=.*/DB_USERNAME=sail/' .env
+          sudo sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=Ju@n09100/' .env
+          sudo sed -i 's/REDIS_HOST=.*/REDIS_HOST=redis-11799.c62.us-east-1-4.ec2.redns.redis-cloud.com/' .env
+          sudo sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=WukZ4P0eRGhHSxdqXHE866i9yKt5my9f/' .env
+          sudo sed -i 's/REDIS_PORT=.*/REDIS_PORT=11799/' .env
+          sudo sed -i 's/REDIS_USERNAME=.*/REDIS_USERNAME=default/' .env
+          sudo sed -i 's/MAIL_MAILER=.*/MAIL_MAILER=smtp/' .env
+          sudo sed -i 's/MAIL_HOST=.*/MAIL_HOST=sandbox.smtp.mailtrap.io/' .env
+          sudo sed -i 's/MAIL_PORT=.*/MAIL_PORT=2525/' .env
+          sudo sed -i 's/MAIL_USERNAME=.*/MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}/' .env
+          sudo sed -i 's/MAIL_PASSWORD=.*/MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}/' .env
+          sudo sed -i 's/MAIL_ENCRYPTION=.*/MAIL_ENCRYPTION=null/' .env
+          sudo sed -i 's/MAIL_FROM_ADDRESS=.*/MAIL_FROM_ADDRESS="course@online.com"/' .env
+          sudo sed -i 's/MAIL_FROM_NAME=.*/MAIL_FROM_NAME="course"/' .env
+          sudo sed -i 's/JWT_SECRET=.*/JWT_SECRET=${{ secrets.JWT_SECRET }}/' .env
+          sudo sed -i 's/JWT_ALGO=.*/JWT_ALGO=HS256/' .env
+          sudo sed -i 's/GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}/' .env
+          sudo sed -i 's/GOOGLE_CLIENT_SECRET=.*/GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}/' .env
+          sudo sed -i 's/GOOGLE_REDIRECT_URI=.*/GOOGLE_REDIRECT_URI=https:\/\/oauth.pstmn.io\/v1\/callback/' .env
 
-    - name: Configure .env file
-      run: |
-        sudo sed -i 's/DB_HOST=127.0.0.1/DB_HOST=mysql/' .env
-        sudo sed -i 's/DB_DATABASE=laravel/DB_DATABASE=course-online/' .env
-        sudo sed -i 's/DB_USERNAME=root/DB_USERNAME=root/' .env
-        sudo sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysqladmin ping -h"mysql" --silent; do
+            echo 'waiting for mysql to be ready...'
+            sleep 5
+          done
 
-    - name: Run migrations
-      run: php artisan migrate
+      - name: Run migrations
+        run: php artisan migrate
 
-    - name: Run tests
-      run: vendor/bin/phpunit
+      - name: Run tests
+        run: vendor/bin/phpunit
