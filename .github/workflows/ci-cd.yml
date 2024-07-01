@@ -22,7 +22,7 @@ jobs:
           MYSQL_PASSWORD: Ju@n09100
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout code
@@ -77,10 +77,19 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          until mysqladmin ping -h"mysql" --silent; do
+          end=$((SECONDS+300))
+          while (( SECONDS < end )); do
+            if mysqladmin ping -h"mysql" --silent; then
+              echo 'MySQL is ready!'
+              break
+            fi
             echo 'waiting for mysql to be ready...'
             sleep 5
           done
+
+      - name: Check MySQL logs if not ready
+        if: failure()
+        run: docker logs $(docker ps -q --filter ancestor=mysql:5.7)
 
       - name: Run migrations
         run: php artisan migrate
