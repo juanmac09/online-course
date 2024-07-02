@@ -19,8 +19,8 @@ class ContentWriteRepository implements IContentWriteRepository
      */
     public function uploadContent(array $contentData)
     {
-        CourseContent::create($contentData);
-        return $contentData;
+        $content = CourseContent::create($contentData);
+        return $content;
     }
 
     /**

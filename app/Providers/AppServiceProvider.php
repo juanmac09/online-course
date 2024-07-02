@@ -63,6 +63,8 @@ use App\Interfaces\Service\CourseAdvanced\ISearchPublicCourseService;
 use App\Interfaces\Service\CourseAdvanced\IUploadedCourseService;
 use App\Interfaces\Service\Enrollments\IEnrollmentsWriteService;
 use App\Interfaces\Service\Enrollments\ISearchEnrollmentsService;
+use App\Interfaces\Service\FileStorage\IStorageService;
+use App\Interfaces\Service\FileStorage\IUnStorageService;
 use App\Interfaces\Service\Pagination\IPaginationService;
 use App\Interfaces\Service\Permission\IPermissionVerificationService;
 use App\Interfaces\Service\Qualification\IQualificationReadService;
@@ -133,6 +135,8 @@ use App\Services\CourseAdvanced\SearchPublicCourseService;
 use App\Services\CourseAdvanced\UploadedCourseService;
 use App\Services\Enrollments\EnrollmentsWriteService;
 use App\Services\Enrollments\SearchEnrollmentsService;
+use App\Services\FileStorage\StorageService;
+use App\Services\FileStorage\UnStorageService;
 use App\Services\Pagination\PaginationService;
 use App\Services\Permission\PermissionVerificationService;
 use App\Services\Qualification\QualificationReadService;
@@ -191,6 +195,8 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IPermissionVerificationService::class,PermissionVerificationService::class);
         $this -> app -> bind(ICourseOwnerService::class,CourseOwnerService::class);
         $this -> app -> bind(ICacheService::class,CacheService::class);
+        $this -> app -> bind(IStorageService::class,StorageService::class);
+        $this -> app -> bind(IUnStorageService::class,UnStorageService::class);
 
         // Repositories
         $this -> app -> bind(IRoleWriteRepository::class,RoleWriteRepository::class);

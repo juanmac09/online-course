@@ -2,17 +2,24 @@
 
 namespace App\Services\Content;
 
+use App\Interfaces\Repository\Content\IContentRepository;
 use App\Interfaces\Repository\Content\IContentWriteRepository;
 use App\Interfaces\Service\Content\IContentWriteService;
+use App\Interfaces\Service\FileStorage\IStorageService;
+use App\Jobs\UnStorageJob;
 
 class ContentWriteService implements IContentWriteService
 {
+    public $contentWriteRepository;
+    public $storageService;
     public $contentRepository;
     /**
      * Create a new class instance.
      */
-    public function __construct(IContentWriteRepository $contentRepository)
+    public function __construct(IContentWriteRepository $contentWriteRepository,IStorageService $storageService, IContentRepository $contentRepository)
     {
+        $this->contentWriteRepository = $contentWriteRepository;
+        $this->storageService = $storageService;
         $this->contentRepository = $contentRepository;
     }
 
@@ -27,8 +34,9 @@ class ContentWriteService implements IContentWriteService
      */
     public function uploadContent(array $contentData)
     {
-        $contentData['content'] = "http://localhost/example";
-        $content = $this->contentRepository->uploadContent($contentData);
+        $path =  $this -> storageService -> storage($contentData['course_id'],$contentData['content']);
+        $contentData['content'] = $path;
+        $content = $this->contentWriteRepository->uploadContent($contentData);
         return $content;
     }
 
@@ -43,11 +51,16 @@ class ContentWriteService implements IContentWriteService
      */
     public function updateContent(int $id, array $contentData)
     {
+        $content = null;
         if (isset($contentData['content'])) {
-            $contentData['content'] = "http://localhost/newExample";
+            $content = $this -> contentRepository -> contentById($id);
+            $path = $this -> storageService -> storage($content -> course_id,$contentData['content']);
+            $contentData['content'] = $path;
+            UnStorageJob::dispatch($content -> getRawOriginal('content'));
+            $content = null;
         }
 
-        $content = $this->contentRepository->updateContent($id, $contentData);
+        $content = $this->contentWriteRepository->updateContent($id, $contentData);
         return $content;
     }
 
@@ -59,7 +72,7 @@ class ContentWriteService implements IContentWriteService
      */
     public function disableContent(int $id)
     {
-        return $this->contentRepository->disableContent($id);
+        return $this->contentWriteRepository->disableContent($id);
     }
 
 
@@ -73,7 +86,7 @@ class ContentWriteService implements IContentWriteService
     {
         $contents = collect();
         foreach ($contentData as $id => $position) {
-            $content = $this->contentRepository->updateContentOrder($id, $position);
+            $content = $this->contentWriteRepository->updateContentOrder($id, $position);
             $contents->push($content);
         }
         return $contents;

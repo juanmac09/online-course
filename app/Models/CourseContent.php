@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,23 @@ class CourseContent extends Model
 {
     use HasFactory;
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+    // Mutator
+
+    /**
+     * Get the content attribute with a mutator.
+     *
+     * This method is a mutator that retrieves the content attribute and appends the environment variable 'PATH_CONTENT' to it.
+     *
+     * @param string $value The content value to be processed.
+     *
+     * @return string The processed content value.
+     */
+    public function getContentAttribute($value)
+    {
+        return env('PATH_CONTENT') . $value;
+    }
+
 
     // Relationships
 
