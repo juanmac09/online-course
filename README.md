@@ -54,7 +54,7 @@ AUTH_GUARD=api
 JWT_SECRET=jwt_secret
 
 JWT_ALGO=HS256
-
+```
 
 ```bash
 composer install
